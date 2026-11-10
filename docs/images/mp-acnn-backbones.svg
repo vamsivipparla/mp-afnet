@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 484" width="1040" height="484" role="img" aria-labelledby="title description">
+  <title id="title">MP-ACNN backbones</title>
+  <desc id="description">Three families encode each patch size separately. The custom CNN flattens 512 features per patch, the residual CNN globally max pools 256 features per patch, and the dense CNN globally average pools 136 features per patch. Each family concatenates its three embeddings before its classifier.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto" viewBox="0 0 7 7" markerUnits="userSpaceOnUse">
+      <path d="M0 0 L7 3.5 L0 7 Z" fill="#607890"/>
+    </marker>
+  </defs>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <rect x="1" y="1" width="1038" height="482" rx="16" fill="#ffffff" stroke="#cbd7e5"/>
+    <rect x="28" y="26" width="5" height="26" rx="2" fill="#177d88" stroke="none"/>
+    <text x="46" y="50" font-size="28" font-weight="700" fill="#14233b" text-anchor="start">MP-ACNN backbones</text>
+    <text x="46" y="75" font-size="15" font-weight="400" fill="#465973" text-anchor="start">Per-scale encoders and classification heads for the default 16³ / 32³ / 48³ inputs</text>
+    <path d="M28 94 H1012" fill="none" stroke="#cbd7e5" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="28" y="120" font-size="12" font-weight="700" fill="#465973" text-anchor="start" letter-spacing="1.1">MODEL FAMILY</text>
+    <text x="193" y="120" font-size="12" font-weight="700" fill="#465973" text-anchor="start" letter-spacing="1.1">ENCODER AT EACH PATCH SCALE</text>
+    <text x="697" y="120" font-size="12" font-weight="700" fill="#465973" text-anchor="start" letter-spacing="1.1">PER-SCALE READOUT</text>
+    <text x="864" y="120" font-size="12" font-weight="700" fill="#465973" text-anchor="start" letter-spacing="1.1">CLASSIFIER</text>
+    <rect x="28" y="139" width="984" height="89" rx="9" fill="#f5f8fc" stroke="#cbd7e5"/>
+    <text x="42" y="173" font-size="18" font-weight="700" fill="#244687" text-anchor="start">MP-ACNN1</text>
+    <text x="42" y="198" font-size="15" font-weight="400" fill="#465973" text-anchor="start">Custom</text>
+    <rect x="193" y="150" width="90" height="67" rx="6" fill="#ffffff" stroke="#cbd7e5"/>
+    <text x="203" y="172" font-size="15" font-weight="700" fill="#14233b" text-anchor="start">AvgPool</text>
+    <text x="203" y="192" font-size="12" font-weight="400" fill="#465973" text-anchor="start">2 × 1 × 1</text>
+    <rect x="301" y="150" width="177" height="67" rx="6" fill="#edf8f8" stroke="#b8dbdd"/>
+    <text x="311" y="172" font-size="15" font-weight="700" fill="#0d6570" text-anchor="start">4 Conv stages</text>
+    <text x="311" y="192" font-size="12" font-weight="400" fill="#465973" text-anchor="start">64 → 128 → 256 → 512</text>
+    <text x="311" y="208" font-size="12" font-weight="400" fill="#465973" text-anchor="start">Gate before each max pool</text>
+    <rect x="489" y="150" width="178" height="67" rx="6" fill="#ffffff" stroke="#cbd7e5"/>
+    <text x="499" y="172" font-size="15" font-weight="700" fill="#14233b" text-anchor="start">Scale-specific tail</text>
+    <text x="499" y="192" font-size="12" font-weight="400" fill="#465973" text-anchor="start">16³: identity</text>
+    <text x="499" y="208" font-size="12" font-weight="400" fill="#465973" text-anchor="start">32³ / 48³: 2³ conv</text>
+    <path d="M174 183 H186" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+    <path d="M283 183 H294" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+    <path d="M478 183 H484" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+    <path d="M667 183 H690" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+    <rect x="697" y="150" width="139" height="67" rx="6" fill="#ffffff" stroke="#cbd7e5"/>
+    <text x="708" y="174" font-size="15" font-weight="700" fill="#14233b" text-anchor="start">Flatten</text>
+    <text x="708" y="196" font-size="13" font-weight="400" fill="#465973" text-anchor="start">512 features</text>
+    <path d="M836 183 H857" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+    <rect x="864" y="150" width="136" height="67" rx="6" fill="#f3f0fc" stroke="#d9d1ef"/>
+    <text x="874" y="173" font-size="15" font-weight="700" fill="#494287" text-anchor="start">Concat × 3</text>
+    <text x="874" y="195" font-size="13" font-weight="400" fill="#14233b" text-anchor="start">1536 → 512 → 2</text>
+    <rect x="28" y="238" width="984" height="89" rx="9" fill="#f5f8fc" stroke="#cbd7e5"/>
+    <text x="42" y="272" font-size="18" font-weight="700" fill="#244687" text-anchor="start">MP-ACNN2</text>
+    <text x="42" y="297" font-size="15" font-weight="400" fill="#465973" text-anchor="start">Residual</text>
+    <rect x="193" y="249" width="90" height="67" rx="6" fill="#ffffff" stroke="#cbd7e5"/>
+    <text x="203" y="271" font-size="15" font-weight="700" fill="#14233b" text-anchor="start">3³ Conv</text>
+    <text x="203" y="291" font-size="12" font-weight="400" fill="#465973" text-anchor="start">16 channels</text>
+    <rect x="301" y="249" width="366" height="67" rx="6" fill="#edf8f8" stroke="#b8dbdd"/>
+    <text x="311" y="271" font-size="15" font-weight="700" fill="#0d6570" text-anchor="start">4 residual groups</text>
+    <text x="311" y="291" font-size="12" font-weight="400" fill="#465973" text-anchor="start">4 bottleneck blocks each</text>
+    <text x="311" y="307" font-size="12" font-weight="400" fill="#465973" text-anchor="start">32 → 64 → 128 → 256</text>
+    <path d="M483 260 V305" fill="none" stroke="#b8dbdd"/>
+    <text x="499" y="271" font-size="15" font-weight="700" fill="#0d6570" text-anchor="start">Within each group</text>
+    <text x="499" y="291" font-size="12" font-weight="400" fill="#465973" text-anchor="start">Stride 2 at group entry</text>
+    <text x="499" y="307" font-size="12" font-weight="400" fill="#465973" text-anchor="start">Gate at group output</text>
+    <path d="M174 282 H186" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+    <path d="M283 282 H294" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+    <path d="M667 282 H690" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+    <rect x="697" y="249" width="139" height="67" rx="6" fill="#ffffff" stroke="#cbd7e5"/>
+    <text x="708" y="273" font-size="15" font-weight="700" fill="#14233b" text-anchor="start">Global max pool</text>
+    <text x="708" y="295" font-size="13" font-weight="400" fill="#465973" text-anchor="start">256 features</text>
+    <path d="M836 282 H857" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+    <rect x="864" y="249" width="136" height="67" rx="6" fill="#f3f0fc" stroke="#d9d1ef"/>
+    <text x="874" y="272" font-size="15" font-weight="700" fill="#494287" text-anchor="start">Concat × 3</text>
+    <text x="874" y="294" font-size="13" font-weight="400" fill="#14233b" text-anchor="start">768 → 256 → 2</text>
+    <rect x="28" y="337" width="984" height="89" rx="9" fill="#f5f8fc" stroke="#cbd7e5"/>
+    <text x="42" y="371" font-size="18" font-weight="700" fill="#244687" text-anchor="start">MP-ACNN3</text>
+    <text x="42" y="396" font-size="15" font-weight="400" fill="#465973" text-anchor="start">Dense</text>
+    <rect x="193" y="348" width="90" height="67" rx="6" fill="#ffffff" stroke="#cbd7e5"/>
+    <text x="203" y="370" font-size="15" font-weight="700" fill="#14233b" text-anchor="start">3³ Conv</text>
+    <text x="203" y="390" font-size="12" font-weight="400" fill="#465973" text-anchor="start">16 channels</text>
+    <rect x="301" y="348" width="366" height="67" rx="6" fill="#edf8f8" stroke="#b8dbdd"/>
+    <text x="311" y="370" font-size="15" font-weight="700" fill="#0d6570" text-anchor="start">3 dense blocks</text>
+    <text x="311" y="390" font-size="12" font-weight="400" fill="#465973" text-anchor="start">5 layers each · growth 8</text>
+    <text x="311" y="406" font-size="12" font-weight="400" fill="#465973" text-anchor="start">Gate at block output</text>
+    <path d="M483 359 V404" fill="none" stroke="#b8dbdd"/>
+    <text x="499" y="370" font-size="15" font-weight="700" fill="#0d6570" text-anchor="start">Between blocks</text>
+    <text x="499" y="390" font-size="12" font-weight="400" fill="#465973" text-anchor="start">1³ conv + avg pool</text>
+    <text x="499" y="406" font-size="12" font-weight="400" fill="#465973" text-anchor="start">56 → 96 → 136 channels</text>
+    <path d="M174 381 H186" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+    <path d="M283 381 H294" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+    <path d="M667 381 H690" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+    <rect x="697" y="348" width="139" height="67" rx="6" fill="#ffffff" stroke="#cbd7e5"/>
+    <text x="708" y="372" font-size="15" font-weight="700" fill="#14233b" text-anchor="start">Global avg pool</text>
+    <text x="708" y="394" font-size="13" font-weight="400" fill="#465973" text-anchor="start">136 features</text>
+    <path d="M836 381 H857" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+    <rect x="864" y="348" width="136" height="67" rx="6" fill="#f3f0fc" stroke="#d9d1ef"/>
+    <text x="874" y="371" font-size="15" font-weight="700" fill="#494287" text-anchor="start">Concat × 3</text>
+    <text x="874" y="393" font-size="13" font-weight="400" fill="#14233b" text-anchor="start">408 → 136 → 2</text>
+    <path d="M28 441 H1012" fill="none" stroke="#cbd7e5" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="28" y="463" font-size="14" font-weight="400" fill="#465973" text-anchor="start">Head: concatenate scale embeddings → dropout (0.5) → Linear + ReLU → 2 logits. Apply softmax at inference.</text>
+  </g>
+</svg>

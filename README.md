@@ -6,9 +6,9 @@ I am **Vamsi Krishna Vipparla**. This repository contains the PyTorch implementa
 
 MP-AFNet scores candidate locations supplied with volumetric chest CT scans. It combines three 3D CNN families to distinguish lung nodules from candidates with similar appearance, such as vessel crossings.
 
-![Candidate neighborhoods at three patch sizes](docs/images/paper-multi-patch.png)
+![MP-AFNet overview. Three CT patches feed each attention CNN. Majority voting and averaging the agreeing scores produce the final nodule score.](docs/images/mp-afnet-overview.svg)
 
-**Figure 8.** Candidate context at three patch sizes, from Vipparla et al. (2021). [Paper](https://doi.org/10.4236/jcc.2021.94001) · [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+**MP-AFNet overview.** Redrawn from Figure 11 of Vipparla et al. (2021). [Paper](https://doi.org/10.4236/jcc.2021.94001) · [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
 ## Method
 
@@ -17,16 +17,24 @@ MP-AFNet scores candidate locations supplied with volumetric chest CT scans. It 
 3. **Balanced training.** Augment positive candidates using right-angle rotations, flips, and one-voxel shifts shared across patch scales. Draw an equal number of samples from a rotating, shuffled negative pool at each iteration.
 4. **Hybrid fusion.** Each model votes nodule when its score exceeds 0.5. Average the nodule scores of models that agree with the majority. For scores of 0.482, 0.997, and 0.993, the fused score is 0.995.
 
-| Model | CLI family | Backbone |
-|---|---|---|
-| MP-ACNN1 | `custom` | Four convolution stages and a 512-unit classification head |
-| MP-ACNN2 | `residual` | 16 bottleneck blocks per scale and global max pooling |
-| MP-ACNN3 | `dense` | Three five-layer dense blocks per scale and global average pooling |
-| MP-AFNet | `fuse` | Hybrid fusion of the three MP-ACNN outputs |
+### Backbone design
+
+![MP-ACNN1 uses gated convolution stages and flattening. MP-ACNN2 uses gated residual groups and global max pooling. MP-ACNN3 uses gated dense blocks and global average pooling. Each classifier concatenates embeddings from three scales.](docs/images/mp-acnn-backbones.svg)
+
+**Per-scale encoders and classification heads.** Redrawn from Figure 9 of Vipparla et al. (2021), with dimensions for the default PyTorch models. Train the families with `--family custom`, `--family residual`, or `--family dense`. [Model code](src/lung_attention/models.py) · [Paper](https://doi.org/10.4236/jcc.2021.94001) · [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+
+<details>
+<summary>Patch examples and additive attention gate</summary>
+
+![Candidate neighborhoods at three patch sizes](docs/images/paper-multi-patch.png)
+
+**Figure 8.** Candidate context at three patch sizes, from Vipparla et al. (2021). [Paper](https://doi.org/10.4236/jcc.2021.94001) · [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
 ![Additive attention gate used in the paper](docs/images/paper-attention-gate.png)
 
 **Figure 10.** Additive attention gate, from Vipparla et al. (2021), converted to PNG. [Paper](https://doi.org/10.4236/jcc.2021.94001) · [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+
+</details>
 
 ## Published LUNA16 results
 

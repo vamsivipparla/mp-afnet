@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 374" width="1040" height="374" role="img" aria-labelledby="title description">
+  <title id="title">MP-AFNet architecture</title>
+  <desc id="description">A chest CT and candidate coordinates are preprocessed and cropped at three scales. Each of three CNN families encodes all three crops, concatenates its features and predicts a nodule score. Hybrid fusion votes at 0.5 and averages the scores from the majority class.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto" viewBox="0 0 7 7" markerUnits="userSpaceOnUse">
+      <path d="M0 0 L7 3.5 L0 7 Z" fill="#607890"/>
+    </marker>
+  </defs>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <rect x="1" y="1" width="1038" height="372" rx="16" fill="#ffffff" stroke="#cbd7e5"/>
+    <rect x="28" y="26" width="5" height="26" rx="2" fill="#177d88" stroke="none"/>
+    <text x="46" y="50" font-size="28" font-weight="700" fill="#14233b" text-anchor="start">MP-AFNet architecture</text>
+    <text x="46" y="75" font-size="15" font-weight="400" fill="#465973" text-anchor="start">Multi-scale candidate scoring and decision fusion for 3D chest CT</text>
+    <path d="M28 94 H1012" fill="none" stroke="#cbd7e5" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="28" y="120" font-size="12" font-weight="700" fill="#465973" text-anchor="start" letter-spacing="1.1">01  INPUT</text>
+    <text x="212" y="120" font-size="12" font-weight="700" fill="#465973" text-anchor="start" letter-spacing="1.1">02  CANDIDATE CROPS</text>
+    <text x="409" y="120" font-size="12" font-weight="700" fill="#465973" text-anchor="start" letter-spacing="1.1">03  MULTI-PATCH ATTENTION</text>
+    <text x="787" y="120" font-size="12" font-weight="700" fill="#465973" text-anchor="start" letter-spacing="1.1">04  HYBRID FUSION</text>
+    <rect x="28" y="168" width="150" height="134" rx="9" fill="#f5f8fc" stroke="#cbd7e5"/>
+    <path d="M49 211 H87 V186 H49 Z M55 181 H93 V205 M61 176 H99 V199" fill="none" stroke="#4e6d8d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M55 203 L62 195 L68 201 L76 191 L83 197" fill="none" stroke="#177d88" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="45" y="237" font-size="19" font-weight="700" fill="#14233b" text-anchor="start">Chest CT</text>
+    <text x="45" y="261" font-size="14" font-weight="400" fill="#465973" text-anchor="start">+ candidate center</text>
+    <text x="45" y="284" font-size="13" font-weight="400" fill="#465973" text-anchor="start">1 mm isotropic grid</text>
+    <rect x="212" y="168" width="139" height="134" rx="9" fill="#edf8f8" stroke="#b8dbdd"/>
+    <rect x="227" y="183" width="109" height="30" rx="5" fill="#ffffff" stroke="#c3e0e2"/>
+    <path d="M239 194 L246 190 L253 194 V203 L246 207 L239 203 Z M239 194 L246 198 L253 194 M246 198 V207" fill="none" stroke="#177d88" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="264" y="204" font-size="17" font-weight="700" fill="#0d6570" text-anchor="start">16³</text>
+    <text x="291" y="204" font-size="11" font-weight="400" fill="#465973" text-anchor="start">voxels</text>
+    <rect x="227" y="221" width="109" height="30" rx="5" fill="#ffffff" stroke="#c3e0e2"/>
+    <path d="M239 232 L246 228 L253 232 V241 L246 245 L239 241 Z M239 232 L246 236 L253 232 M246 236 V245" fill="none" stroke="#177d88" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="264" y="242" font-size="17" font-weight="700" fill="#0d6570" text-anchor="start">32³</text>
+    <text x="291" y="242" font-size="11" font-weight="400" fill="#465973" text-anchor="start">voxels</text>
+    <rect x="227" y="259" width="109" height="30" rx="5" fill="#ffffff" stroke="#c3e0e2"/>
+    <path d="M239 270 L246 266 L253 270 V279 L246 283 L239 279 Z M239 270 L246 274 L253 270 M246 274 V283" fill="none" stroke="#177d88" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="264" y="280" font-size="17" font-weight="700" fill="#0d6570" text-anchor="start">48³</text>
+    <text x="291" y="280" font-size="11" font-weight="400" fill="#465973" text-anchor="start">voxels</text>
+    <text x="409" y="143" font-size="14" font-weight="400" fill="#465973" text-anchor="start">Each model receives all three crops.</text>
+    <path d="M178 235 H204" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+    <path d="M351 235 H379 M379 176 V294" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M379 176 H401" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+    <rect x="409" y="152" width="314" height="48" rx="8" fill="#f5f8fc" stroke="#cbd7e5"/>
+    <text x="423" y="182" font-size="17" font-weight="700" fill="#244687" text-anchor="start">MP-ACNN1</text>
+    <text x="538" y="182" font-size="15" font-weight="400" fill="#465973" text-anchor="start">Custom</text>
+    <rect x="672" y="162" width="36" height="28" rx="5" fill="#e8effb" stroke="none"/>
+    <text x="690" y="182" font-size="17" font-weight="700" fill="#244687" text-anchor="middle">p₁</text>
+    <path d="M723 176 H752" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M379 235 H401" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+    <rect x="409" y="211" width="314" height="48" rx="8" fill="#f5f8fc" stroke="#cbd7e5"/>
+    <text x="423" y="241" font-size="17" font-weight="700" fill="#244687" text-anchor="start">MP-ACNN2</text>
+    <text x="538" y="241" font-size="15" font-weight="400" fill="#465973" text-anchor="start">Residual</text>
+    <rect x="672" y="221" width="36" height="28" rx="5" fill="#e8effb" stroke="none"/>
+    <text x="690" y="241" font-size="17" font-weight="700" fill="#244687" text-anchor="middle">p₂</text>
+    <path d="M723 235 H752" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M379 294 H401" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+    <rect x="409" y="270" width="314" height="48" rx="8" fill="#f5f8fc" stroke="#cbd7e5"/>
+    <text x="423" y="300" font-size="17" font-weight="700" fill="#244687" text-anchor="start">MP-ACNN3</text>
+    <text x="538" y="300" font-size="15" font-weight="400" fill="#465973" text-anchor="start">Dense</text>
+    <rect x="672" y="280" width="36" height="28" rx="5" fill="#e8effb" stroke="none"/>
+    <text x="690" y="300" font-size="17" font-weight="700" fill="#244687" text-anchor="middle">p₃</text>
+    <path d="M723 294 H752" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M752 176 V294 M752 235 H779" fill="none" stroke="#607890" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+    <rect x="787" y="152" width="225" height="166" rx="9" fill="#f3f0fc" stroke="#d9d1ef"/>
+    <text x="806" y="182" font-size="19" font-weight="700" fill="#494287" text-anchor="start">MP-AFNet</text>
+    <text x="806" y="208" font-size="15" font-weight="400" fill="#14233b" text-anchor="start">Majority vote at 0.5</text>
+    <text x="806" y="232" font-size="15" font-weight="400" fill="#14233b" text-anchor="start">Mean of agreeing scores</text>
+    <path d="M806 247 H992" fill="none" stroke="#d9d1ef" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="806" y="259" width="187" height="37" rx="6" fill="#494287" stroke="none"/>
+    <text x="899.5" y="283" font-size="15" font-weight="700" fill="#ffffff" text-anchor="middle">Final nodule score</text>
+    <path d="M28 333 H1012" fill="none" stroke="#cbd7e5" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="28" y="355" font-size="14" font-weight="400" fill="#465973" text-anchor="start">Within each model: separate 3D encoders by patch scale → concatenate features → fully connected classifier → softmax score</text>
+  </g>
+</svg>
