@@ -2,13 +2,13 @@
 
 [Paper](https://doi.org/10.4236/jcc.2021.94001) · [LUNA16](https://luna16.grand-challenge.org/Data/) · [Citation](CITATION.cff)
 
-I am **Vamsi Krishna Vipparla**. This repository contains the PyTorch implementation of MP-AFNet, the multi-patch attention and hybrid fusion method described in *Attention Based Multi-Patched 3D-CNNs with Hybrid Fusion Architecture for Reducing False Positives during Lung Nodule Detection* (2021).
+I am **Vamsi Krishna Vipparla**. This repository implements MP-AFNet in PyTorch, the multi-patch attention and hybrid fusion method from my 2021 paper, *Attention Based Multi-Patched 3D-CNNs with Hybrid Fusion Architecture for Reducing False Positives during Lung Nodule Detection*.
 
 MP-AFNet scores candidate locations supplied with volumetric chest CT scans. It combines three 3D CNN families to distinguish lung nodules from candidates with similar appearance, such as vessel crossings.
 
 ![MP-AFNet overview. Three CT patches feed each attention CNN. Majority voting and averaging the agreeing scores produce the final nodule score.](docs/images/mp-afnet-overview.png)
 
-**MP-AFNet overview.** Redrawn from Figure 11 of Vipparla et al. (2021). [SVG](docs/images/mp-afnet-overview.svg) · [Paper](https://doi.org/10.4236/jcc.2021.94001) · [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+**MP-AFNet architecture.** Three attention CNNs score each candidate at multiple patch scales. Hybrid fusion combines their scores into a final nodule score. [SVG](docs/images/mp-afnet-overview.svg) · [Paper, Figure 11](https://doi.org/10.4236/jcc.2021.94001) · [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
 ## Method
 
@@ -21,17 +21,17 @@ MP-AFNet scores candidate locations supplied with volumetric chest CT scans. It 
 
 ![MP-ACNN1 uses gated convolution stages and flattening. MP-ACNN2 uses gated residual groups and global max pooling. MP-ACNN3 uses gated dense blocks and global average pooling. Each classifier concatenates embeddings from three scales.](docs/images/mp-acnn-backbones.png)
 
-**Per-scale encoders and classification heads.** Redrawn from Figure 9 of Vipparla et al. (2021), with dimensions for the default PyTorch models. Train the families with `--family custom`, `--family residual`, or `--family dense`. [SVG](docs/images/mp-acnn-backbones.svg) · [Model code](src/lung_attention/models.py) · [Paper](https://doi.org/10.4236/jcc.2021.94001) · [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+**MP-ACNN backbones.** The custom, residual, and dense CNNs concatenate features from three patch scales before classification. The diagram gives the default PyTorch dimensions. Select a backbone with `--family custom`, `--family residual`, or `--family dense`. [SVG](docs/images/mp-acnn-backbones.svg) · [Model code](src/lung_attention/models.py) · [Paper, Figure 9](https://doi.org/10.4236/jcc.2021.94001) · [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
 ### Patch examples and additive attention gate
 
 ![Candidate neighborhoods at three patch sizes](docs/images/paper-multi-patch.png)
 
-**Figure 8.** Candidate context at three patch sizes, from Vipparla et al. (2021). [Paper](https://doi.org/10.4236/jcc.2021.94001) · [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+**Multi-scale CT patches.** Larger crops capture more of the anatomy surrounding a candidate. [Paper, Figure 8](https://doi.org/10.4236/jcc.2021.94001) · [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
 ![Additive attention gate used in the paper](docs/images/paper-attention-gate.png)
 
-**Figure 10.** Additive attention gate, from Vipparla et al. (2021), converted to PNG. [Paper](https://doi.org/10.4236/jcc.2021.94001) · [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+**Additive attention gate.** The gate combines local features with coarser context to weight each spatial location. [Paper, Figure 10](https://doi.org/10.4236/jcc.2021.94001) · [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
 ## Published LUNA16 results
 
