@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "Please cite the paper when referencing MP-AFNet."
+title: "MP-AFNet: Multi-patch 3D attention CNNs for lung nodule false-positive reduction"
+type: software
+version: 0.1.0
+repository-code: https://github.com/vamsivipparla/mp-afnet
+authors:
+  - family-names: Vipparla
+    given-names: Vamsi Krishna
+preferred-citation:
+  type: article
+  title: "Attention Based Multi-Patched 3D-CNNs with Hybrid Fusion Architecture for Reducing False Positives during Lung Nodule Detection"
+  authors:
+    - family-names: Vipparla
+      given-names: Vamsi Krishna
+    - family-names: Chilukuri
+      given-names: Premith Kumar
+    - family-names: Kande
+      given-names: Giri Babu
+  journal: Journal of Computer and Communications
+  year: 2021
+  volume: "9"
+  issue: "4"
+  start: "1"
+  end: "26"
+  doi: 10.4236/jcc.2021.94001
