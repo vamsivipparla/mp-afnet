@@ -1,6 +1,6 @@
 # MP-AFNet for Lung Nodule False-Positive Reduction
 
-[Paper](https://doi.org/10.4236/jcc.2021.94001) · [LUNA16](https://luna16.grand-challenge.org/Data/) · [Citation](CITATION.cff)
+[Paper](https://doi.org/10.4236/jcc.2021.94001) · [LUNA16](https://luna16.grand-challenge.org/Data/) · [Reproduce the experiments](#reproduce-the-luna16-experiments) · [Citation](CITATION.cff)
 
 I am **Vamsi Krishna Vipparla**. This repository implements MP-AFNet in PyTorch, the multi-patch attention and hybrid fusion method from my 2021 paper, *Attention Based Multi-Patched 3D-CNNs with Hybrid Fusion Architecture for Reducing False Positives during Lung Nodule Detection*.
 
@@ -44,21 +44,68 @@ The values below are from Table 4 of the paper. CPM averages FROC sensitivity at
 | MP-ACNN3 | 0.878 |
 | **MP-AFNet** | **0.931** |
 
-## Installation
+### Attention feature maps
 
-Use Python 3.12. The examples use CUDA for training and inference. Install the appropriate PyTorch build for your system. [PyTorch installation](https://pytorch.org/get-started/locally/)
+![Two lung nodule examples with input CT patches on the left, intermediate feature maps with attention in the center, and intermediate feature maps without attention on the right.](docs/images/paper-attention-feature-maps.png)
+
+**Intermediate feature maps with and without attention.** Each row shows a CT input patch and the corresponding intermediate features from both model variants. [Paper, Figure 17](https://doi.org/10.4236/jcc.2021.94001) · [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+
+## Reproduce the LUNA16 experiments
+
+### 1. Clone and install
+
+Run these commands in Bash on Linux with Git, Python 3.12, curl, unzip, and an NVIDIA GPU. The example installs the PyTorch wheel for CUDA 12.8. For a different CUDA version, choose the corresponding wheel for your system. [PyTorch installation](https://pytorch.org/get-started/previous-versions/)
 
 ```bash
-python3 -m venv .venv
+git clone https://github.com/vamsivipparla/mp-afnet.git
+cd mp-afnet
+python3.12 -m venv .venv
 source .venv/bin/activate
+python -m pip install torch==2.9.1 --index-url https://download.pytorch.org/whl/cu128
 python -m pip install -e '.[evaluation,test]'
 mp-afnet --help
-python -m pytest -q
+python -c 'import torch; assert torch.cuda.is_available(), "Install a CUDA-enabled PyTorch build"; print(torch.cuda.get_device_name(0))'
 ```
 
-## Data preparation
+### 2. Download and unpack LUNA16
 
-Download LUNA16 subsets 0–9, `candidates_V2.zip`, `annotations.csv`, and `evaluationScript.zip`. Preserve the ten subset directories and keep each scan's `.mhd` and `.raw` files together. Extract the evaluator with its helper modules and `annotations_excluded.csv`. [LUNA16 data guide](https://luna16.grand-challenge.org/Data/) · [Challenge downloads](https://zenodo.org/records/3723295)
+Download all ten CT subsets and the candidate list, annotations, and evaluator for the false-positive reduction track. The CT downloads total about 66 GB. Allow additional space for the unpacked scans and the prepared 1 mm volumes. The download commands resume partial files when rerun. [LUNA16 data guide](https://luna16.grand-challenge.org/Data/) · [LUNA16 Part 1](https://zenodo.org/records/3723295) · [LUNA16 Part 2](https://zenodo.org/records/4121926)
+
+```bash
+bash <<'BASH'
+set -euo pipefail
+mkdir -p data/downloads data/raw
+
+part1=https://zenodo.org/records/3723295/files
+part2=https://zenodo.org/records/4121926/files
+
+download() {
+  local url="$1" dest="$2"
+  if [[ ! -s "$dest" ]]; then
+    curl --fail --location --retry 5 --continue-at - \
+      --output "$dest.part" "$url"
+    mv "$dest.part" "$dest"
+  fi
+}
+
+for fold in {0..9}; do
+  base="$part1"
+  if (( fold >= 7 )); then base="$part2"; fi
+  zip="subset${fold}.zip"
+  download "$base/$zip?download=1" "data/downloads/$zip"
+  mkdir -p "data/raw/subset${fold}"
+  unzip -ojq "data/downloads/$zip" '*.mhd' '*.raw' -d "data/raw/subset${fold}"
+done
+
+download "$part1/candidates_V2.zip?download=1" data/downloads/candidates_V2.zip
+download "$part1/annotations.csv?download=1" data/annotations.csv
+download "$part1/evaluationScript.zip?download=1" data/downloads/evaluationScript.zip
+unzip -oq data/downloads/candidates_V2.zip candidates_V2.csv -d data
+unzip -oq data/downloads/evaluationScript.zip -d data
+BASH
+```
+
+The resulting inputs are organized as follows. Keep each scan’s `.mhd` header and `.raw` volume in the same subset directory.
 
 ```text
 data/
@@ -70,41 +117,79 @@ data/
 ├── annotations.csv
 └── evaluationScript/
     ├── noduleCADEvaluationLUNA16.py
+    ├── NoduleFinding.py
+    ├── tools/
     └── annotations/
         └── annotations_excluded.csv
 ```
 
+### 3. Verify the evaluator and prepare scans
+
 ```bash
-mp-afnet prepare --raw data/raw --candidates data/candidates_V2.csv --output data/prepared
+LUNA16_EVALUATOR=data/evaluationScript/noduleCADEvaluationLUNA16.py python -m pytest -q
+mp-afnet prepare --raw data/raw --candidates data/candidates_V2.csv \
+  --preprocessing lung --output data/prepared
+cat data/prepared/preprocessing.json
 ```
 
-Preparation writes one memory-mapped CT array per scan, candidate and scan manifests, and preprocessing settings. Use `--preprocessing resample` with a separate output directory to run the resampling-only ablation. Candidates keep their original coordinates and subset membership.
+Preparation writes one memory-mapped CT array per scan, the scan and candidate manifests, and preprocessing settings. The full benchmark has 888 scans. Candidates retain their original coordinates and subset membership.
 
-## Training, inference, and evaluation
+### 4. Train, predict, fuse, and evaluate all ten folds
 
-For each held-out LUNA16 subset, set aside 20% of the remaining scans for validation using a fixed seed. Training uses 12 balanced iterations of 3 epochs, a default batch size of 64, SGD with learning rate 0.001 and momentum 0.9, and dropout 0.5. The run saves the checkpoint with the lowest validation cross-entropy and records its scan split, parameters, seed, and metrics. Adjust `--batch-size` to fit your GPU. The CUDA example allows operations that may have nondeterministic gradients.
+Each LUNA16 subset serves as the held-out test fold once. The same seed selects 20% of the remaining scans for validation across the three CNN families. Training uses 12 balanced iterations of 3 epochs and selects the checkpoint with the lowest validation cross-entropy. Use a fresh experiment name for each run. Set `MP_AFNET_BATCH_SIZE` if you need a smaller batch to fit GPU memory. The CUDA commands allow operations with nondeterministic gradients.
+
+Define this function in the Bash session where you activated the environment.
 
 ```bash
-for fold in {0..9}; do
-  for family in custom residual dense; do
-    mp-afnet train --data data/prepared --test-fold "$fold" --family "$family" \
-      --output "runs/fold${fold}/${family}" --device cuda --allow-nondeterministic
-    mp-afnet predict --data data/prepared \
-      --checkpoint "runs/fold${fold}/${family}/best.pt" \
-      --output "outputs/fold${fold}-${family}.csv" --device cuda
+run_luna16() (
+  set -euo pipefail
+  experiment="$1"
+  shift
+  output="outputs/$experiment"
+  mkdir -p "$output"
+
+  for fold in {0..9}; do
+    for family in custom residual dense; do
+      run_dir="runs/$experiment/fold${fold}/$family"
+      mp-afnet train --data data/prepared --test-fold "$fold" --family "$family" \
+        --output "$run_dir" --iterations 12 --epochs-per-iteration 3 \
+        --positive-repeats 40 --batch-size "${MP_AFNET_BATCH_SIZE:-64}" \
+        --learning-rate 0.001 --seed 2021 --device cuda --allow-nondeterministic "$@"
+      mp-afnet predict --data data/prepared --checkpoint "$run_dir/best.pt" \
+        --output "$output/fold${fold}-$family.csv" --device cuda
+    done
+    mp-afnet fuse "$output/fold${fold}-custom.csv" "$output/fold${fold}-residual.csv" \
+      "$output/fold${fold}-dense.csv" --method hybrid --output "$output/fold${fold}-hybrid.csv"
   done
-  mp-afnet fuse "outputs/fold${fold}-custom.csv" "outputs/fold${fold}-residual.csv" \
-    "outputs/fold${fold}-dense.csv" --output "outputs/fold${fold}-hybrid.csv"
-done
 
-mp-afnet merge outputs/fold*-hybrid.csv --data data/prepared --output outputs/mp-afnet.csv
-mp-afnet evaluate --data data/prepared --predictions outputs/mp-afnet.csv \
-  --evaluator data/evaluationScript/noduleCADEvaluationLUNA16.py \
-  --annotations data/annotations.csv --excluded data/evaluationScript/annotations/annotations_excluded.csv \
-  --bootstraps 1000 --output outputs/evaluation
+  for method in custom residual dense hybrid; do
+    mp-afnet merge "$output"/fold*-"$method".csv --data data/prepared \
+      --output "$output/$method.csv"
+    mp-afnet evaluate --data data/prepared --predictions "$output/$method.csv" \
+      --evaluator data/evaluationScript/noduleCADEvaluationLUNA16.py \
+      --annotations data/annotations.csv \
+      --excluded data/evaluationScript/annotations/annotations_excluded.csv \
+      --bootstraps 1000 --seed 2021 --output "$output/evaluation/$method"
+  done
+)
 ```
 
-Fusion joins predictions by scan and physical candidate coordinates. Merge requires one prediction per candidate. Evaluation uses the full scan manifest and the LUNA16 scoring script, then writes `froc_mp_afnet.png` and `metrics.json`. For fold-level evaluation, use `--fold` with that fold's prediction file. To compare architectures, pass `--no-attention` or `--sizes 16` at training time, or `--method mean` at fusion time. Use distinct run and output directories for each comparison.
+Run the multi-patch attention experiment.
+
+```bash
+run_luna16 attention --sizes 16 32 48
+cat outputs/attention/evaluation/hybrid/metrics.json
+```
+
+Run the comparisons using the same held-out folds and seed. The single-scale examples use `32³` patches.
+
+```bash
+run_luna16 no-attention --sizes 16 32 48 --no-attention
+run_luna16 single-scale-32 --sizes 32
+run_luna16 single-scale-32-no-attention --sizes 32 --no-attention
+```
+
+Each model saves its scan split, settings, training history, and selected checkpoint under `runs/<experiment>/`. The merged CSVs contain one held-out prediction per candidate. Each evaluation directory contains a FROC plot (`froc_mp_afnet.png`), the CPM and operating points (`metrics.json`), and the challenge evaluator outputs.
 
 ## Citation
 
